@@ -3,79 +3,57 @@ package metho_project;
 import java.util.*;
 import java.text.ParseException;
 
-
 public class Main {
 
+	public static List<Flight> flights = new ArrayList<>();
+
 	public static void main(String[] args) throws ParseException {
+		
+		
+		InputOutput io = new InputOutput();
+		io.setInputStream(System.in);
+		io.setPrintStream(System.out);
 
-		Scanner keyboard = new Scanner(System.in);
+		io.printStream.println("---Welcome to Script Airlines---");
 
-		// create array list to store the flights
-		ArrayList<Flight> flights = new ArrayList<Flight>();
-		System.out.println("---Welcome to Script Airlines---");
-		int choice;
-		do {
-			choice = menu(keyboard);
-			switch (choice) {
-			case 1:
-				addFlights(keyboard, flights);
-				break;
-			case 2:
-				viewFlights(flights);
-				break;
-			case 3:
-				System.exit(0);
-			default:
-				System.out.println("That was not an available option");
-			}
-		} while (choice == 1 || choice == 2);
-	}
+		
+		Menu menu = new Menu();
 
-	public static void viewFlights(ArrayList<Flight> flights) {
-		System.out.println("---Available Flights---");
-		for (Flight temp : flights) {
-			System.out.println(temp);
+		int choice = 0;
+		while (choice < 8) {
+			choice = menu.chooseItemMainMenu();
+			executeOperation(choice, io);
 		}
+
 	}
 
-	public static int menu(Scanner keyboard) {
-		System.out.println("Please select one of the following options");
-		System.out.println("1. Add Flights");
-		System.out.println("2. View Available Flights");
-		System.out.println("3. Exit");
-		int choice = keyboard.nextInt();
-		// clear buffer
-		keyboard.nextLine();
-		return choice;
-	}
-
-	public static void addFlights(Scanner keyboard, ArrayList<Flight> flights) throws ParseException {
-		char again = 'Y';
-
-		while (again == 'Y') {
-			System.out.print("Departing from:");
-			String departure = keyboard.nextLine();
-
-			System.out.print("Departure Date and Time (MM/dd/yyyy HH:mm): ");
-			String departureDate = keyboard.nextLine();
-
-			System.out.print("Destination:");
-			String destination = keyboard.nextLine();
-
-			System.out.print("Flight length (HH:MM):");
-			String flightLength = keyboard.nextLine();
-
-			System.out.print("Maximum Passengers");
-			int maxPass = keyboard.nextInt();
-			// clear the buffer
-			keyboard.nextLine();
-
-			// add the new flight to the flight list
-			flights.add(new Flight(departure, destination, maxPass, departureDate, flightLength));
-			System.out.println("Would you like to schedule another flight? Y or N");
-			String input = keyboard.nextLine().toUpperCase();
-			again = input.charAt(0);
+	public static void executeOperation(int choice, InputOutput io) {
+		
+		switch (choice) {
+		case 1:
+			FlightModification.addFlights();
+			break;
+		case 2:
+			Flight.viewFlights();
+			break;
+		case 3:
+			FlightModification.cancelFlight();
+			break;
+		case 4:
+			FlightModification.modifyFlight();
+			break;
+		case 5:
+			flightSearch();
+			break;
+		case 6:
+			displayUpcomingFlights();
+			break;
+		case 7:
+			return;
+		default:
+			io.printStream.println("That was not an available option");
 		}
+
 	}
 
 }

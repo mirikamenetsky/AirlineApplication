@@ -1,10 +1,7 @@
 package metho_project;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 
 public class Flight {
@@ -12,44 +9,101 @@ public class Flight {
 	private String departure;
 	private String destination;
 	private int maxPass;
-	private Date departureDate;
-	private Date arrivalDate;
-	private double flightLength;
+	private LocalDateTime departureDate;
+	private LocalDateTime arrivalDate;
+	private int flightLengthHours;
+	private int flightLengthMinutes;
+	private static int flights = 1;
+	private int flightNumber; 
+	
+	public Flight() {
+		
+	}
 
-	public Flight(String departure, String destination, int maxPass, String departureDate, String flightLength)
-			throws ParseException {
+	public Flight(String departure, String destination, int maxPass, LocalDateTime departureDate, int flightLengthHours,
+			int flightLengthMinutes, LocalDateTime arrivalDate) {
 		this.departure = departure;
 		this.destination = destination;
 		this.maxPass = maxPass;
-		DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-		Date departureDt = (Date) formatter.parse(departureDate);
-		this.departureDate = departureDt;
-		calculateArrivalTime(flightLength);
-		this.flightLength = Double.parseDouble(flightLength.replace(":","."));
+		this.departureDate = departureDate;
+		this.flightLengthHours = flightLengthHours;
+		this.flightLengthMinutes = flightLengthMinutes;
+		this.arrivalDate = arrivalDate;
+		this.flightNumber = flights;
+		flights++;
 
 	}
-
-	@Override
-	public String toString() {
-		StringBuilder output = new StringBuilder();
-		output
-			.append("Departing from: " + departure)
-			.append("\t\t\t" + departureDate)
-			.append("\t\tFlight Length: " + String.valueOf(flightLength).substring(0,2) + " Hours " + String.valueOf(flightLength).substring(3,5)+ " Min")
-			.append("\nArriving to: " + destination)
-			.append("\t\t\t" +arrivalDate)
-			.append("\t\tMaximum Passengers: " + maxPass + "\n");
-		return output.toString();
+	
+	public int getFlightNumber() {
+		return flightNumber;
 	}
 
-	public void calculateArrivalTime(String flightLength) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(departureDate);
-		int hour = Integer.parseInt(flightLength.substring(0, 2));
-		int min = Integer.parseInt(flightLength.substring(3, 5));
-		cal.add(Calendar.HOUR, hour);
-		cal.add(Calendar.MINUTE, min);
-		arrivalDate = cal.getTime();
+	public String getDeparture() {
+		return departure;
 	}
+
+	public void setDeparture(String departure) {
+		this.departure = departure;
+	}
+
+	public String getDestination() {
+		return destination;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+
+	public int getMaxPass() {
+		return maxPass;
+	}
+
+	public void setMaxPass(int maxPass) {
+		this.maxPass = maxPass;
+	}
+
+	public LocalDateTime getDepartureDate() {
+		return departureDate;
+	}
+
+	public void setDepartureDate(LocalDateTime departureDate) {
+		this.departureDate = departureDate;
+	}
+
+	public LocalDateTime getArrivalDate() {
+		return arrivalDate;
+	}
+
+	public void setArrivalDate(LocalDateTime arrivalDate) {
+		this.arrivalDate = arrivalDate;
+	}
+
+	public void setFlightHours(int hours) {
+		this.flightLengthHours = hours;
+	}
+	
+	public void setFlightMinutes(int minutes) {
+		this.flightLengthMinutes = minutes;
+	}
+	public int getFlightHours() {
+		return flightLengthHours;
+	}
+
+	public int getFlightMinutes() {
+		return flightLengthMinutes;
+	}
+
+	public static LocalDateTime calculateArrivalTime(LocalDateTime dDate, int hours, int minutes) {
+		dDate = dDate.plusHours(hours).plusMinutes(minutes);
+		return dDate;
+	}
+
+	public static void viewFlights() {
+		System.out.println("---Available Flights---");
+		for (Flight temp : Main.flights) {
+			System.out.println(Formatter.flightDisplayer(temp));
+		}
+	}
+
 
 }
