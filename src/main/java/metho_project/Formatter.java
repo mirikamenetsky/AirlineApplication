@@ -6,10 +6,10 @@ import java.time.format.DateTimeFormatter;
 public class Formatter {
 
 	public static String flightDisplayer(Flight flight) {
-		return "Departing from: " + flight.getDeparture() + "\t\t\t" + flight.getDepartureDate() + "\t\tFlight Length: "
+		return "Flight Number: " + flight.getFlightNumber() + "\t\tDeparting from: " + flight.getDeparture() + "\t\t\t" + flight.getDepartureDate() + "\t\tFlight Length: "
 				+ flight.getFlightHours() + " Hours " + 
 				+ flight.getFlightMinutes() +  " Minutes"
-				+ "\nArriving to: "
+				+ "\n\t\tArriving to: "
 				+ flight.getDestination() + "\t\t\t" + flight.getArrivalDate() + "\t\tMaximum Passengers: "
 				+ flight.getMaxPass() + "\n";
 	}

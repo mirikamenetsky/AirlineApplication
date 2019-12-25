@@ -1,14 +1,28 @@
 package metho_project;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class FlightModification {
 	
-	private static Menu menu = new Menu();
+	private static InputStream inputStream;
+	private static PrintStream printStream;
+
+	
+	
+	public void setPrintStream(PrintStream printStream) {
+		this.printStream = printStream;
+	}
+
+	public void setInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
+	}
 
 	public static void addFlights() throws ParseException {
 		Scanner scanner = new Scanner(InputOutput.inputStream);
@@ -42,7 +56,7 @@ public class FlightModification {
 			LocalDateTime aDate = Flight.calculateArrivalTime(dDate, flightLengthHours, flightLengthMin);
 
 			// add the new flight to the flight list
-			Main.flights
+			Main.upcomingFlights
 					.add(new Flight(departure, destination, maxPass, dDate, flightLengthHours, flightLengthMin, aDate));
 			System.out.println("Would you like to schedule another flight? Y or N");
 			String input = scanner.nextLine().toUpperCase();
@@ -51,12 +65,13 @@ public class FlightModification {
 	}
 
 	public static void cancelFlight() {
+		Scanner scanner = new Scanner(inputStream);
 		printStream.println("Enter flight number you wish to cancel:");
 		int flightNumber = scanner.nextInt();
 		scanner.nextLine();
 		int removeIndex = findFlight(flightNumber); 
 		if(removeIndex >= 0 ) {
-			Main.flights.remove(removeIndex);
+			Main.upcomingFlights.remove(removeIndex);
 			printStream.println("Flight removed successfully.");
 		}
 		else {
@@ -64,32 +79,21 @@ public class FlightModification {
 		}
 	}
 	public static int getFlightFromUser() {
+		Scanner scanner = new Scanner(inputStream);
 		printStream.println("Enter Flight");
 		int flightNum = scanner.nextInt();
 		scanner.nextLine();
 		return flightNum;
 	}
-	public static void modifyFlight() {
-		int flightNum = getFlightFromUser();
-		int index = findFlight(flightNum);
-		if(index == -1) {
-			outputStream.println("Flight does not exist");
-			return;
-		}
-		int choice = menu.chooseItemToModify();
-		executeModificationChoice(choice, index)
-	}
 	
 	public static void executeModificationChoice(int choice, int index) {
+		modifyDepartureDateTime(index);
 		switch(choice) {
 		case 1:
-			modifyDepartureDateTime(index);
+			modifyDestination(index);
 			break;
 		case 2: 
-			modifyDeparturePlace()
-			break;
-		case 3:
-			modifyDestination(index);
+			modifyDeparturePlace(index);
 			break;
 		default:
 			printStream.println("That was not an available option");
@@ -97,15 +101,17 @@ public class FlightModification {
 	}
 
 	private static void modifyDepartureDateTime(int index) {
+		Scanner scanner = new Scanner(inputStream);
 		printStream.print("Departure Date and Time (yyyy-MM-dd HH:mm): ");
 		String departureDate = scanner.nextLine();
 		LocalDateTime dDate = Formatter.parse(departureDate);
-		LocalDateTime aDate = Flight.calculateArrivalTime(dDate, Main.flights.get(index).getFlightHours(), Main.flights.get(index).getFlightMinutes());
-		Main.flights.get(index).setDepartureDate(dDate);
-		Main.flights.get(index).setArrivalDate(aDate);
+		LocalDateTime aDate = Flight.calculateArrivalTime(dDate, Main.upcomingFlights.get(index).getFlightHours(), Main.upcomingFlights.get(index).getFlightMinutes());
+		Main.upcomingFlights.get(index).setDepartureDate(dDate);
+		Main.upcomingFlights.get(index).setArrivalDate(aDate);
 	}
 
 	private static void modifyDestination(int index) {
+		Scanner scanner = new Scanner(inputStream);
 		printStream.print("Destination:");
 		String destination = scanner.nextLine();
 		printStream.print("Flight length hours:");
@@ -113,15 +119,16 @@ public class FlightModification {
 		printStream.print("minutes:");
 		int minutes = scanner.nextInt();
 		scanner.nextLine();
-		LocalDateTime aDate = Flight.calculateArrivalTime(Main.flights.get(index).getDepartureDate(), hours, minutes);
-		Main.flights.get(index).setDestination(destination);
-		Main.flights.get(index).setFlightHours(hours);
-		Main.flights.get(index).setFlightMinutes(minutes);
-		Main.flights.get(index).setArrivalDate(aDate);
+		LocalDateTime aDate = Flight.calculateArrivalTime(Main.upcomingFlights.get(index).getDepartureDate(), hours, minutes);
+		Main.upcomingFlights.get(index).setDestination(destination);
+		Main.upcomingFlights.get(index).setFlightHours(hours);
+		Main.upcomingFlights.get(index).setFlightMinutes(minutes);
+		Main.upcomingFlights.get(index).setArrivalDate(aDate);
 				
 	}
 
 	private static void modifyDeparturePlace(int index) {
+		Scanner scanner = new Scanner(inputStream);
 		printStream.print("Departing from:");
 		String departure = scanner.nextLine();
 		printStream.print("Flight length hours:");
@@ -129,21 +136,25 @@ public class FlightModification {
 		printStream.print("minutes:");
 		int minutes = scanner.nextInt();
 		scanner.nextLine();
-		LocalDateTime aDate = Flight.calculateArrivalTime(Main.flights.get(index).getDepartureDate(), hours, minutes);
-		Main.flights.get(index).setDeparture(departure);
-		Main.flights.get(index).setFlightHours(hours);
-		Main.flights.get(index).setFlightMinutes(minutes);
-		Main.flights.get(index).setArrivalDate(aDate);
+		LocalDateTime aDate = Flight.calculateArrivalTime(Main.upcomingFlights.get(index).getDepartureDate(), hours, minutes);
+		Main.upcomingFlights.get(index).setDeparture(departure);
+		Main.upcomingFlights.get(index).setFlightHours(hours);
+		Main.upcomingFlights.get(index).setFlightMinutes(minutes);
+		Main.upcomingFlights.get(index).setArrivalDate(aDate);
 		
 	}
 
 	public static int findFlight(int flightNumber) {
-		for (int i = 0; i < Main.flights.size(); i++) {
-			if (Main.flights.get(i).getFlightNumber() == flightNumber) {
+		for (int i = 0; i < Main.upcomingFlights.size(); i++) {
+			if (Main.upcomingFlights.get(i).getFlightNumber() == flightNumber) {
 				return i;
 			}
 		}
 		return -1;
 	}
+	
+
+	
+
 
 }

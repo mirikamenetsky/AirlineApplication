@@ -17,7 +17,7 @@ public class Menu {
 		this.inputStream = inputStream;
 	}
 
-	public int chooseItemMainMenu() {
+	public int chooseItemMain() {
 		Scanner scanner = new Scanner(inputStream);
 		printStream.println("Please select one of the following options");
 		printStream.println("1. Add Flights");
@@ -36,9 +36,19 @@ public class Menu {
 	public int chooseItemToModify() {
 		Scanner scanner = new Scanner(inputStream);
 		printStream.println("Please select one of the following options");
-		printStream.println("1. Modify Departure Date/Time");
-		printStream.println("2. Modify Departure Date/Time");
-		printStream.println("3. Modify Destination");
+		printStream.println("1. Modify Departing From");
+		printStream.println("2. Modify Destination ");
+		int i = scanner.nextInt();
+		// clear the buffer
+		scanner.nextLine();
+		return i;
+	}
+	
+	public int flightSearch() {
+		Scanner scanner = new Scanner(inputStream);
+		printStream.println("Please select one of the following options");
+		printStream.println("1. Search flights by departure");
+		printStream.println("2. Search flights by destination");
 		int i = scanner.nextInt();
 		// clear the buffer
 		scanner.nextLine();
