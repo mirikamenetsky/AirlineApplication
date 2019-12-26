@@ -25,10 +25,9 @@ public class Menu {
 		printStream.println("3. Cancel Flight");
 		printStream.println("4. Modify Flight Details");
 		printStream.println("5. Advanced Flight Search");
-		printStream.println("6. Display Upcoming Flights");
+		printStream.println("6. Display Upcoming Flights Within One Week");
 		printStream.println("7. Exit");
 		int i = scanner.nextInt();
-		// clear the buffer
 		scanner.nextLine();
 		return i;
 	}
@@ -37,9 +36,8 @@ public class Menu {
 		Scanner scanner = new Scanner(inputStream);
 		printStream.println("Please select one of the following options");
 		printStream.println("1. Modify Departing From");
-		printStream.println("2. Modify Destination ");
+		printStream.println("2. Modify Destination");
 		int i = scanner.nextInt();
-		// clear the buffer
 		scanner.nextLine();
 		return i;
 	}
@@ -50,7 +48,6 @@ public class Menu {
 		printStream.println("1. Search flights by departure");
 		printStream.println("2. Search flights by destination");
 		int i = scanner.nextInt();
-		// clear the buffer
 		scanner.nextLine();
 		return i;
 	}

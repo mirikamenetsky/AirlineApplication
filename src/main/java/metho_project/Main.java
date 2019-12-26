@@ -7,84 +7,128 @@ import java.time.LocalDate;
 public class Main {
 
 	public static List<Flight> upcomingFlights = new ArrayList<>();
-	public static List<Flight> pastFlights = new ArrayList<>();
-
+	private static Menu menu = new Menu();
+	private static InputOutput io = new InputOutput();
+	private static Search search = new Search();
+	
 	public static void main(String[] args) throws ParseException {
 
-		InputOutput io = new InputOutput();
+		setInputPrintStreams();		
+		InputOutput.printStream.println("---Welcome to Script Airlines---");
+		int choice = 0;
+		while (choice < 7) {
+			choice = menu.chooseItemMain();
+			executeOperation(choice);
+		}
+	}
+
+	public static void setInputPrintStreams() {
 		io.setInputStream(System.in);
 		io.setPrintStream(System.out);
 
-		io.printStream.println("---Welcome to Script Airlines---");
-
-		Menu menu = new Menu();
 		menu.setInputStream(System.in);
 		menu.setPrintStream(System.out);
 
 		FlightModification fm = new FlightModification();
 		fm.setInputStream(System.in);
 		fm.setPrintStream(System.out);
-
-		Flight flight = new Flight();
-		flight.setInputStream(System.in);
-		flight.setPrintStream(System.out);
-
-		int choice = 0;
-		while (choice < 8) {
-			choice = menu.chooseItemMain();
-			executeOperation(choice, io, menu);
-		}
-
+		
+		search.setPrintStream(System.out);
+		SystemClock sc = new RealSystemClock();
+		search.setSystemClock(sc);
 	}
 
-	public static void executeOperation(int choice, InputOutput io, Menu menu) throws ParseException {
+	public static void executeOperation(int choice) throws ParseException {
 
 		switch (choice) {
 		case 1:
 			FlightModification.addFlights();
 			break;
 		case 2:
-			Flight.viewFlights(Main.upcomingFlights);
+			Search.viewFlights(Main.upcomingFlights);
 			break;
 		case 3:
-			FlightModification.cancelFlight();
+			cancelFlight();
 			break;
 		case 4:
-			modifyFlight(menu, io);
+			modifyFlight();
 			break;
 		case 5:
-			searchForFlights(menu, io);
+			searchForFlights();
 			break;
 		case 6:
-			SystemClock clock = new RealSystemClock();
-			Flight.displayUpcomingFlights(clock);
+			upcomingFlightsWithinOneWeek();
 			break;
 		case 7:
 			return;
 		default:
-			io.printStream.println("That was not an available option");
+			InputOutput.printStream.println("That was not an available option");
 		}
-
 	}
 
-	public static void modifyFlight(Menu menu, InputOutput io) {
-		int flightNum = FlightModification.getFlightFromUser();
-		int index = FlightModification.findFlight(flightNum);
+	public static void cancelFlight() {
+		boolean successful = FlightModification.cancelFlight();
+		if(successful) {
+			InputOutput.printStream.println("Flight removed successfully");
+			}
+		else {
+			InputOutput.printStream.println("Flight not Found");
+		}
+	}
+
+	public static void upcomingFlightsWithinOneWeek() {
+		List<Flight> flights = search.upcomingFlightsWithinOneWeek();
+		search.viewFlights(flights);
+	}
+
+	public static void modifyFlight() {
+		int flightNum = FlightModification.getFlightNumFromUser();
+		int index = Search.findFlight(flightNum);
 		if (index == -1) {
-			io.printStream.println("Flight does not exist");
+			InputOutput.printStream.println("Flight does not exist");
 			return;
 		}
 		int choice = menu.chooseItemToModify();
 		FlightModification.executeModificationChoice(choice, index);
 	}
 
-	public static void searchForFlights(Menu menu, InputOutput io) {
-		Scanner scanner = new Scanner(io.inputStream);
-		io.printStream.println("Enter date to view available flights");
-		String d = scanner.nextLine();
-		LocalDate date = LocalDate.parse(d);
+	public static void searchForFlights() {
 		int choice = menu.flightSearch();
-		Flight.executeFlightSearchChoice(choice, date);
+		executeFlightSearchChoice(choice);
+	}
+	
+	public static void executeFlightSearchChoice(int choice) {
+		switch (choice) {
+		case 1:
+			searchByDeparture();
+			break;
+		case 2:
+			searchByDestination();
+			break;
+		default:
+			return;
+		}
+	}
+
+	public static void searchByDestination() {
+		LocalDate date = getDateFromUser();
+		InputOutput.printStream.println("Enter Destination");
+		String destination = InputOutput.scanner.nextLine();
+		Search.searchByDestination(date, destination);
+	}
+
+	public static void searchByDeparture() {
+		LocalDate date = getDateFromUser();
+		InputOutput.printStream.println("Enter Departure Location");
+		String departure = InputOutput.scanner.nextLine();
+		Search.searchByDeparture(date, departure);
+	}
+
+	public static LocalDate getDateFromUser() {
+		InputOutput.printStream.print("Enter date to view available flights (yyyy-MM-dd):");
+		String d = InputOutput.scanner.nextLine();
+		LocalDate date = LocalDate.parse(d);
+		return date;
 	}
 
 }

@@ -9,7 +9,7 @@ public class Formatter {
 		return "Flight Number: " + flight.getFlightNumber() + "\t\tDeparting from: " + flight.getDeparture() + "\t\t\t" + flight.getDepartureDate() + "\t\tFlight Length: "
 				+ flight.getFlightHours() + " Hours " + 
 				+ flight.getFlightMinutes() +  " Minutes"
-				+ "\n\t\tArriving to: "
+				+ "\n\t\t\t\tArriving to: "
 				+ flight.getDestination() + "\t\t\t" + flight.getArrivalDate() + "\t\tMaximum Passengers: "
 				+ flight.getMaxPass() + "\n";
 	}
