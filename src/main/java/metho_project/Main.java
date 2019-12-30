@@ -1,20 +1,59 @@
 package metho_project;
 
 import java.util.*;
+import java.io.PrintStream;
 import java.text.ParseException;
-import java.time.LocalDate;
 
 public class Main {
 
 	public static List<Flight> upcomingFlights = new ArrayList<>();
-	private static Menu menu = new Menu();
-	private static InputOutput io = new InputOutput();
-	private static Search search = new Search();
-	
+	private final PrintStream printStream;
+	private final StringPrompter stringPrompter;
+	private final IntPrompter intPrompter;
+	private final DatePrompter datePrompter;
+	private final StringValidator stringValidator;
+	private final IntValidator intValidator;
+	private Menu menu;
+	private Search search;
+	private FlightModification fm;
+	private Formatter formatter;
+	private Calculator calc;
+	private DateValidator dateValidator;
+
+	public Main(StringPrompter stringPrompter, StringValidator stringValidator, IntPrompter intPrompter,
+			IntValidator intValidator, DatePrompter datePrompter, PrintStream printStream) {
+		this.stringPrompter = stringPrompter;
+		this.stringValidator = stringValidator;
+		this.intPrompter = intPrompter;
+		this.intValidator = intValidator;
+		this.datePrompter = datePrompter;
+		this.printStream = printStream;
+
+	}
+
 	public static void main(String[] args) throws ParseException {
 
-		setInputPrintStreams();		
-		InputOutput.printStream.println("---Welcome to Script Airlines---");
+		Main m = new Main(new StringPrompterImpl(), new StringValidatorImpl(), new IntPrompterImpl(),
+				new IntValidatorImpl(), new DatePrompterImpl(), System.out);
+		m.initializeFields();
+		m.setInputPrintStream();
+		m.loop();
+	}
+
+	private void initializeFields() {
+		menu = new Menu();
+		formatter = new Formatter();
+		SystemClock sc = new RealSystemClock();
+		dateValidator = new DateValidatorImpl(sc);
+		search = new Search(stringPrompter, sc, System.out, formatter, stringValidator, datePrompter, dateValidator);
+		calc = new Calculator();
+		fm = new FlightModification(stringPrompter, stringValidator, datePrompter, dateValidator, intPrompter,
+				intValidator, calc, search);
+
+	}
+
+	public void loop() throws ParseException {
+		
 		int choice = 0;
 		while (choice < 7) {
 			choice = menu.chooseItemMain();
@@ -22,30 +61,19 @@ public class Main {
 		}
 	}
 
-	public static void setInputPrintStreams() {
-		io.setInputStream(System.in);
-		io.setPrintStream(System.out);
-
+	public void setInputPrintStream() {
 		menu.setInputStream(System.in);
 		menu.setPrintStream(System.out);
-
-		FlightModification fm = new FlightModification();
-		fm.setInputStream(System.in);
-		fm.setPrintStream(System.out);
-		
-		search.setPrintStream(System.out);
-		SystemClock sc = new RealSystemClock();
-		search.setSystemClock(sc);
 	}
 
-	public static void executeOperation(int choice) throws ParseException {
+	public void executeOperation(int choice) throws ParseException {
 
 		switch (choice) {
 		case 1:
-			FlightModification.addFlights();
+			fm.addFlights();
 			break;
 		case 2:
-			Search.viewFlights(Main.upcomingFlights);
+			search.viewFlights(upcomingFlights);
 			break;
 		case 3:
 			cancelFlight();
@@ -62,73 +90,54 @@ public class Main {
 		case 7:
 			return;
 		default:
-			InputOutput.printStream.println("That was not an available option");
+			printStream.println("That was not an available option");
+			loop();
+			
 		}
 	}
 
-	public static void cancelFlight() {
-		boolean successful = FlightModification.cancelFlight();
-		if(successful) {
-			InputOutput.printStream.println("Flight removed successfully");
-			}
-		else {
-			InputOutput.printStream.println("Flight not Found");
+	public void cancelFlight() {
+		boolean successful = fm.cancelFlight();
+		if (successful) {
+			printStream.println("Flight removed successfully");
+		} else {
+			printStream.println("Flight not Found");
 		}
 	}
 
-	public static void upcomingFlightsWithinOneWeek() {
+	public void upcomingFlightsWithinOneWeek() {
 		List<Flight> flights = search.upcomingFlightsWithinOneWeek();
 		search.viewFlights(flights);
 	}
 
-	public static void modifyFlight() {
-		int flightNum = FlightModification.getFlightNumFromUser();
-		int index = Search.findFlight(flightNum);
+	public void modifyFlight() {
+		int flightNum = fm.getFlightNumFromUser();
+		int index = search.findFlight(flightNum);
 		if (index == -1) {
-			InputOutput.printStream.println("Flight does not exist");
+			printStream.println("Flight does not exist");
 			return;
 		}
 		int choice = menu.chooseItemToModify();
-		FlightModification.executeModificationChoice(choice, index);
+		fm.executeModificationChoice(choice, index);
+		printStream.println("Flight modified successfully");
 	}
 
-	public static void searchForFlights() {
+	public void searchForFlights() {
 		int choice = menu.flightSearch();
 		executeFlightSearchChoice(choice);
 	}
-	
-	public static void executeFlightSearchChoice(int choice) {
+
+	public void executeFlightSearchChoice(int choice) {
 		switch (choice) {
 		case 1:
-			searchByDeparture();
+			search.searchByDeparture();
 			break;
 		case 2:
-			searchByDestination();
+			search.searchByDestination();
 			break;
 		default:
 			return;
 		}
-	}
-
-	public static void searchByDestination() {
-		LocalDate date = getDateFromUser();
-		InputOutput.printStream.println("Enter Destination");
-		String destination = InputOutput.scanner.nextLine();
-		Search.searchByDestination(date, destination);
-	}
-
-	public static void searchByDeparture() {
-		LocalDate date = getDateFromUser();
-		InputOutput.printStream.println("Enter Departure Location");
-		String departure = InputOutput.scanner.nextLine();
-		Search.searchByDeparture(date, departure);
-	}
-
-	public static LocalDate getDateFromUser() {
-		InputOutput.printStream.print("Enter date to view available flights (yyyy-MM-dd):");
-		String d = InputOutput.scanner.nextLine();
-		LocalDate date = LocalDate.parse(d);
-		return date;
 	}
 
 }

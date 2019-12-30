@@ -14,10 +14,6 @@ public class Flight {
 	private static int flights = 1;
 	private int flightNumber;
 
-	public Flight() {
-
-	}
-
 	public Flight(String departure, String destination, int maxPass, LocalDateTime departureDate, int flightLengthHours,
 			int flightLengthMinutes, LocalDateTime arrivalDate) {
 		this.departure = departure;
@@ -56,10 +52,6 @@ public class Flight {
 		return maxPass;
 	}
 
-	public void setMaxPass(int maxPass) {
-		this.maxPass = maxPass;
-	}
-
 	public LocalDateTime getDepartureDate() {
 		return departureDate;
 	}
@@ -93,9 +85,4 @@ public class Flight {
 	}
 
 
-
-	public static LocalDateTime calculateArrivalTime(LocalDateTime dDate, int hours, int minutes) {
-		dDate = dDate.plusHours(hours).plusMinutes(minutes);
-		return dDate;
-	}
 }

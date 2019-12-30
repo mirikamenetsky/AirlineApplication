@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class TestFlight {
+public class FormatterTest {
 
 	@Test
 	public void test() {

@@ -1,64 +1,68 @@
 package metho_project;
 
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.util.Scanner;
 
 public class FlightModification {
+	private Calculator calc;
+	private Search search;
+	private StringPrompter stringPrompter;
+	private IntPrompter intPrompter;
+	private DatePrompter datePrompter;
+	private StringValidator stringValidator;
+	private IntValidator intValidator;
+	private DateValidator dateValidator;
 
-	private static InputStream inputStream;
-	private static PrintStream printStream;
-
-	public void setPrintStream(PrintStream printStream) {
-		this.printStream = printStream;
+	public FlightModification(StringPrompter stringPrompter, StringValidator stringValidator, DatePrompter datePrompter,
+			DateValidator dateValidator, IntPrompter intPrompter, IntValidator intValidator, Calculator calc,
+			Search search) {
+		this.calc = calc;
+		this.search = search;
+		this.stringPrompter = stringPrompter;
+		this.stringValidator = stringValidator;
+		this.intPrompter = intPrompter;
+		this.intValidator = intValidator;
+		this.datePrompter = datePrompter;
+		this.dateValidator = dateValidator;
 	}
 
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
-	}
+	public void addFlights() throws ParseException {
 
-	public static void addFlights() throws ParseException {
-		Scanner scanner = new Scanner(inputStream);
 		char again = 'Y';
-
 		while (again == 'Y') {
 
-			printStream.print("Departing from:");
-			String departure = scanner.nextLine();
+			String departure = stringPrompter.promptUser("Departing from:", stringValidator);
 
-			printStream.print("Departure Date and Time (yyyy-MM-dd HH:mm): ");
-			String departureDate = scanner.nextLine();
+			LocalDateTime departureDate = datePrompter.promptUser("Departure Date and Time (yyyy-MM-dd HH:mm): ",
+					dateValidator);
 
-			printStream.print("Destination:");
-			String destination = scanner.nextLine();
+			String destination = stringPrompter.promptUser("Destination:", stringValidator);
 
-			printStream.print("Flight length hours:");
-			int flightLengthHours = scanner.nextInt();
+			int flightLengthHours = intPrompter.promptUser("Flight length hours:", intValidator);
 
-			printStream.print("Flight length minutes:");
-			int flightLengthMin = scanner.nextInt();
+			int flightLengthMin = intPrompter.promptUser("Flight length minutes:", intValidator);
 
-			printStream.print("Maximum Passengers");
-			int maxPass = scanner.nextInt();
+			int maxPass = intPrompter.promptUser("Maximum Passengers", intValidator);
 
-			scanner.nextLine();
+			LocalDateTime arriveDate = calc.calculateArrivalTime(departureDate, flightLengthHours, flightLengthMin);
 
-			LocalDateTime departDate = Formatter.parse(departureDate);
-			LocalDateTime arriveDate = Flight.calculateArrivalTime(departDate, flightLengthHours, flightLengthMin);
-			
-			Main.upcomingFlights.add(new Flight(departure, destination, maxPass, departDate, flightLengthHours,
+			Main.upcomingFlights.add(new Flight(departure, destination, maxPass, departureDate, flightLengthHours,
 					flightLengthMin, arriveDate));
-			System.out.println("Would you like to schedule another flight? Y or N");
-			String input = scanner.nextLine().toUpperCase();
+
+			String input = stringPrompter
+					.promptUser("Would you like to schedule another flight? Y or N", stringValidator).toUpperCase();
 			again = input.charAt(0);
+			while (again != 'N' && again != 'Y') {
+				input = stringPrompter.promptUser("Would you like to schedule another flight? Y or N", stringValidator)
+						.toUpperCase();
+				again = input.charAt(0);
+			}
 		}
 	}
 
-	public static boolean cancelFlight() {
+	public boolean cancelFlight() {
 		int flightNumber = getFlightNumFromUser();
-		int removeIndex = Search.findFlight(flightNumber);
+		int removeIndex = search.findFlight(flightNumber);
 		if (removeIndex >= 0) {
 			Main.upcomingFlights.remove(removeIndex);
 			return true;
@@ -66,22 +70,19 @@ public class FlightModification {
 		return false;
 	}
 
-	public static int getFlightNumFromUser() {
-		Scanner scanner = new Scanner(inputStream);
-		printStream.print("Enter Flight Number:");
-		int flightNum = scanner.nextInt();
-		scanner.nextLine();
+	public int getFlightNumFromUser() {
+		int flightNum = intPrompter.promptUser("Enter Flight Number:", intValidator);
 		return flightNum;
 	}
 
-	public static void executeModificationChoice(int choice, int index) {
+	public void executeModificationChoice(int choice, int index) {
 		switch (choice) {
 		case 1:
 			modifyDeparturePlace(index);
 			break;
 		case 2:
 			modifyDestination(index);
-			break;	
+			break;
 		case 3:
 			modifyDepartureDateTime(index);
 			break;
@@ -90,27 +91,24 @@ public class FlightModification {
 		}
 	}
 
-	private static void modifyDepartureDateTime(int index) {
-		Scanner scanner = new Scanner(inputStream);
-		printStream.print("Enter new Departure Date and Time (yyyy-MM-dd HH:mm): ");
-		String departureDate = scanner.nextLine();
-		LocalDateTime dDate = Formatter.parse(departureDate);
-		LocalDateTime aDate = Flight.calculateArrivalTime(dDate, Main.upcomingFlights.get(index).getFlightHours(),
+	private void modifyDepartureDateTime(int index) {
+
+		LocalDateTime departureDate = datePrompter.promptUser("Enter new Departure Date and Time (yyyy-MM-dd HH:mm): ",
+				dateValidator);
+		LocalDateTime aDate = calc.calculateArrivalTime(departureDate, Main.upcomingFlights.get(index).getFlightHours(),
 				Main.upcomingFlights.get(index).getFlightMinutes());
-		Main.upcomingFlights.get(index).setDepartureDate(dDate);
+		Main.upcomingFlights.get(index).setDepartureDate(departureDate);
 		Main.upcomingFlights.get(index).setArrivalDate(aDate);
 	}
 
-	private static void modifyDestination(int index) {
-		Scanner scanner = new Scanner(inputStream);
-		printStream.print("Destination:");
-		String destination = scanner.nextLine();
-		printStream.print("Flight length hours:");
-		int hours = scanner.nextInt();
-		printStream.print("minutes:");
-		int minutes = scanner.nextInt();
-		scanner.nextLine();
-		LocalDateTime aDate = Flight.calculateArrivalTime(Main.upcomingFlights.get(index).getDepartureDate(), hours,
+	private void modifyDestination(int index) {
+		String destination = stringPrompter.promptUser("Destination:", stringValidator);
+
+		int hours = intPrompter.promptUser("Flight length hours:", intValidator);
+
+		int minutes = intPrompter.promptUser("minutes:", intValidator);
+
+		LocalDateTime aDate = calc.calculateArrivalTime(Main.upcomingFlights.get(index).getDepartureDate(), hours,
 				minutes);
 		Main.upcomingFlights.get(index).setDestination(destination);
 		Main.upcomingFlights.get(index).setFlightHours(hours);
@@ -118,16 +116,14 @@ public class FlightModification {
 		Main.upcomingFlights.get(index).setArrivalDate(aDate);
 	}
 
-	private static void modifyDeparturePlace(int index) {
-		Scanner scanner = new Scanner(inputStream);
-		printStream.print("Departing from:");
-		String departure = scanner.nextLine();
-		printStream.print("Flight length hours:");
-		int hours = scanner.nextInt();
-		printStream.print("minutes:");
-		int minutes = scanner.nextInt();
-		scanner.nextLine();
-		LocalDateTime aDate = Flight.calculateArrivalTime(Main.upcomingFlights.get(index).getDepartureDate(), hours,
+	private void modifyDeparturePlace(int index) {
+		String departure = stringPrompter.promptUser("Departing from:", stringValidator);
+
+		int hours = intPrompter.promptUser("Flight length hours:", intValidator);
+
+		int minutes = intPrompter.promptUser("minutes:", intValidator);
+
+		LocalDateTime aDate = calc.calculateArrivalTime(Main.upcomingFlights.get(index).getDepartureDate(), hours,
 				minutes);
 		Main.upcomingFlights.get(index).setDeparture(departure);
 		Main.upcomingFlights.get(index).setFlightHours(hours);
