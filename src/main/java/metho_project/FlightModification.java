@@ -1,77 +1,41 @@
 package metho_project;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import io.Prompter;
+import validators.*;
 
 public class FlightModification {
-	private Calculator calc;
-	private Search search;
-	private StringPrompter stringPrompter;
-	private IntPrompter intPrompter;
-	private DatePrompter datePrompter;
-	private StringValidator stringValidator;
-	private IntValidator intValidator;
-	private DateValidator dateValidator;
+	private final Calculator calc;
+	private final Searcher search;
+	private final Prompter prompter;
+	private final StringValidator stringValidator;
+	private final DateValidator dateValidator;
+	private final List<Flight> flights;
 
-	public FlightModification(StringPrompter stringPrompter, StringValidator stringValidator, DatePrompter datePrompter,
-			DateValidator dateValidator, IntPrompter intPrompter, IntValidator intValidator, Calculator calc,
-			Search search) {
+	public FlightModification(Prompter prompter, StringValidator stringValidator, DateValidator dateValidator,
+			Calculator calc, Searcher search, List<Flight> flights) {
 		this.calc = calc;
 		this.search = search;
-		this.stringPrompter = stringPrompter;
+		this.prompter = prompter;
 		this.stringValidator = stringValidator;
-		this.intPrompter = intPrompter;
-		this.intValidator = intValidator;
-		this.datePrompter = datePrompter;
 		this.dateValidator = dateValidator;
-	}
-
-	public void addFlights() throws ParseException {
-
-		char again = 'Y';
-		while (again == 'Y') {
-
-			String departure = stringPrompter.promptUser("Departing from:", stringValidator);
-
-			LocalDateTime departureDate = datePrompter.promptUser("Departure Date and Time (yyyy-MM-dd HH:mm): ",
-					dateValidator);
-
-			String destination = stringPrompter.promptUser("Destination:", stringValidator);
-
-			int flightLengthHours = intPrompter.promptUser("Flight length hours:", intValidator);
-
-			int flightLengthMin = intPrompter.promptUser("Flight length minutes:", intValidator);
-
-			int maxPass = intPrompter.promptUser("Maximum Passengers", intValidator);
-
-			LocalDateTime arriveDate = calc.calculateArrivalTime(departureDate, flightLengthHours, flightLengthMin);
-
-			Main.upcomingFlights.add(new Flight(departure, destination, maxPass, departureDate, flightLengthHours,
-					flightLengthMin, arriveDate));
-
-			String input = stringPrompter
-					.promptUser("Would you like to schedule another flight? Y or N", stringValidator).toUpperCase();
-			again = input.charAt(0);
-			while (again != 'N' && again != 'Y') {
-				input = stringPrompter.promptUser("Would you like to schedule another flight? Y or N", stringValidator)
-						.toUpperCase();
-				again = input.charAt(0);
-			}
-		}
+		this.flights = flights;
 	}
 
 	public boolean cancelFlight() {
 		int flightNumber = getFlightNumFromUser();
 		int removeIndex = search.findFlight(flightNumber);
 		if (removeIndex >= 0) {
-			Main.upcomingFlights.remove(removeIndex);
+			flights.remove(removeIndex);
 			return true;
 		}
 		return false;
 	}
 
 	public int getFlightNumFromUser() {
-		int flightNum = intPrompter.promptUser("Enter Flight Number:", intValidator);
+		int flightNum = prompter.promptFlight("Enter Flight Number:");
 		return flightNum;
 	}
 
@@ -87,48 +51,46 @@ public class FlightModification {
 			modifyDepartureDateTime(index);
 			break;
 		default:
-			return;
+			throw new IllegalArgumentException("Will never reach this line");
 		}
 	}
 
 	private void modifyDepartureDateTime(int index) {
 
-		LocalDateTime departureDate = datePrompter.promptUser("Enter new Departure Date and Time (yyyy-MM-dd HH:mm): ",
+		LocalDateTime departureDate = prompter.promptDate("Enter new Departure Date and Time (yyyy-MM-dd HH:mm): ",
 				dateValidator);
-		LocalDateTime aDate = calc.calculateArrivalTime(departureDate, Main.upcomingFlights.get(index).getFlightHours(),
-				Main.upcomingFlights.get(index).getFlightMinutes());
-		Main.upcomingFlights.get(index).setDepartureDate(departureDate);
-		Main.upcomingFlights.get(index).setArrivalDate(aDate);
+		LocalDateTime aDate = calc.calculateArrivalTime(departureDate, flights.get(index).getFlightHours(),
+				flights.get(index).getFlightMinutes());
+		flights.get(index).setDepartureDate(departureDate);
+		flights.get(index).setArrivalDate(aDate);
 	}
 
 	private void modifyDestination(int index) {
-		String destination = stringPrompter.promptUser("Destination:", stringValidator);
+		String destination = prompter.prompt("Destination:", stringValidator);
 
-		int hours = intPrompter.promptUser("Flight length hours:", intValidator);
+		int hours = prompter.prompt("Flight length hours:", 0, 21);
 
-		int minutes = intPrompter.promptUser("minutes:", intValidator);
+		int minutes = prompter.prompt("minutes:", 0, 59);
 
-		LocalDateTime aDate = calc.calculateArrivalTime(Main.upcomingFlights.get(index).getDepartureDate(), hours,
-				minutes);
-		Main.upcomingFlights.get(index).setDestination(destination);
-		Main.upcomingFlights.get(index).setFlightHours(hours);
-		Main.upcomingFlights.get(index).setFlightMinutes(minutes);
-		Main.upcomingFlights.get(index).setArrivalDate(aDate);
+		LocalDateTime aDate = calc.calculateArrivalTime(flights.get(index).getDepartureDate(), hours, minutes);
+		flights.get(index).setDestination(destination);
+		flights.get(index).setFlightHours(hours);
+		flights.get(index).setFlightMinutes(minutes);
+		flights.get(index).setArrivalDate(aDate);
 	}
 
 	private void modifyDeparturePlace(int index) {
-		String departure = stringPrompter.promptUser("Departing from:", stringValidator);
+		String departure = prompter.prompt("Departing from:", stringValidator);
 
-		int hours = intPrompter.promptUser("Flight length hours:", intValidator);
+		int hours = prompter.prompt("Flight length hours:", 0, 21);
 
-		int minutes = intPrompter.promptUser("minutes:", intValidator);
+		int minutes = prompter.prompt("minutes:", 0, 59);
 
-		LocalDateTime aDate = calc.calculateArrivalTime(Main.upcomingFlights.get(index).getDepartureDate(), hours,
-				minutes);
-		Main.upcomingFlights.get(index).setDeparture(departure);
-		Main.upcomingFlights.get(index).setFlightHours(hours);
-		Main.upcomingFlights.get(index).setFlightMinutes(minutes);
-		Main.upcomingFlights.get(index).setArrivalDate(aDate);
+		LocalDateTime aDate = calc.calculateArrivalTime(flights.get(index).getDepartureDate(), hours, minutes);
+		flights.get(index).setDeparture(departure);
+		flights.get(index).setFlightHours(hours);
+		flights.get(index).setFlightMinutes(minutes);
+		flights.get(index).setArrivalDate(aDate);
 
 	}
 }

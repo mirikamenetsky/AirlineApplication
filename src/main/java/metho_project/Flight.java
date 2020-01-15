@@ -11,8 +11,8 @@ public class Flight {
 	private LocalDateTime arrivalDate;
 	private int flightLengthHours;
 	private int flightLengthMinutes;
-	private static int flights = 1;
 	private int flightNumber;
+	private static int flights = 1;
 
 	public Flight(String departure, String destination, int maxPass, LocalDateTime departureDate, int flightLengthHours,
 			int flightLengthMinutes, LocalDateTime arrivalDate) {
@@ -26,6 +26,19 @@ public class Flight {
 		this.flightNumber = flights;
 		flights++;
 
+	}
+
+	public Flight(String departure, String destination, int maxPass, LocalDateTime departureDate, int flightLengthHours,
+			int flightLengthMinutes, LocalDateTime arrivalDate, int flightNumber) {
+		this.departure = departure;
+		this.destination = destination;
+		this.maxPass = maxPass;
+		this.departureDate = departureDate;
+		this.flightLengthHours = flightLengthHours;
+		this.flightLengthMinutes = flightLengthMinutes;
+		this.arrivalDate = arrivalDate;
+		this.flightNumber = flightNumber;
+		flights = ++flightNumber;
 	}
 
 	public int getFlightNumber() {
@@ -83,6 +96,5 @@ public class Flight {
 	public int getFlightMinutes() {
 		return flightLengthMinutes;
 	}
-
 
 }

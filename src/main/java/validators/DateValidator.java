@@ -1,14 +1,16 @@
-package metho_project;
+package validators;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import metho_project.SystemClock;
 
-public class StubDateValidator implements DateValidator {
+public class DateValidator implements Validator {
 
-	private SystemClock systemClock;
+	private final SystemClock systemClock;
 	private LocalDateTime date;
 
-	StubDateValidator(SystemClock systemClock) {
+	public DateValidator(SystemClock systemClock) {
 		this.systemClock = systemClock;
 	}
 
@@ -17,6 +19,8 @@ public class StubDateValidator implements DateValidator {
 			return "Date is required";
 		}
 		this.date = parse(value);
+		if (date == null)
+			return "Invalid format";
 		if (date.isBefore(systemClock.getCurrentDate())) {
 			return "Invalid date";
 		}
@@ -25,8 +29,13 @@ public class StubDateValidator implements DateValidator {
 
 	public LocalDateTime parse(String value) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-		LocalDateTime date = LocalDateTime.parse(value, formatter);
-		return date;
+		try {
+			LocalDateTime date = LocalDateTime.parse(value, formatter);
+			return date;
+		} catch (DateTimeParseException e) {
+			return null;
+		}
+
 	}
 
 	public LocalDateTime getDate() {

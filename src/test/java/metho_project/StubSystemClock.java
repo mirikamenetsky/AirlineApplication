@@ -6,7 +6,6 @@ public class StubSystemClock implements SystemClock {
 
 	private LocalDateTime date;
 
-
 	public StubSystemClock(LocalDateTime date) {
 		this.date = date;
 	}

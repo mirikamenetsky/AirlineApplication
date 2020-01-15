@@ -1,54 +1,38 @@
 package metho_project;
 
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Scanner;
+import io.Prompter;
 
 public class Menu {
 
-	private InputStream inputStream;
-	private PrintStream printStream;
+	private final Prompter prompter;
 
-	public void setPrintStream(PrintStream printStream) {
-		this.printStream = printStream;
-	}
-
-	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
+	public Menu(Prompter prompter) {
+		this.prompter = prompter;
 	}
 
 	public int chooseItemMain() {
-		Scanner scanner = new Scanner(inputStream);
-		printStream.println("Please select one of the following options");
-		printStream.println("1. Add Flights");
-		printStream.println("2. View Available Flights");
-		printStream.println("3. Cancel Flight");
-		printStream.println("4. Modify Flight Details");
-		printStream.println("5. Advanced Flight Search");
-		printStream.println("6. Display Upcoming Flights Within One Week");
-		printStream.println("7. Exit");
-		int i = scanner.nextInt();
-		scanner.nextLine();
+		prompter.println("\n1. Add Flights");
+		prompter.println("2. View Available Flights");
+		prompter.println("3. Cancel Flight");
+		prompter.println("4. Modify Flight Details");
+		prompter.println("5. Advanced Flight Search");
+		prompter.println("6. Display Upcoming Flights Within One Week");
+		prompter.println("7. Exit");
+		int i = prompter.prompt("Please select from options 1-7", 1, 7);
 		return i;
 	}
-	
+
 	public int chooseItemToModify() {
-		Scanner scanner = new Scanner(inputStream);
-		printStream.println("Please select one of the following options");
-		printStream.println("1. Modify Departing From");
-		printStream.println("2. Modify Destination");
-		int i = scanner.nextInt();
-		scanner.nextLine();
+		prompter.println("\n1. Modify Departing From");
+		prompter.println("2. Modify Destination");
+		int i = prompter.prompt("Please select option 1 or 2", 1, 2);
 		return i;
 	}
-	
-	public int flightSearch() {
-		Scanner scanner = new Scanner(inputStream);
-		printStream.println("Please select one of the following options");
-		printStream.println("1. Search flights by departure");
-		printStream.println("2. Search flights by destination");
-		int i = scanner.nextInt();
-		scanner.nextLine();
+
+	public int chooseFlightsToSearch() {
+		prompter.println("\n1. Search flights by departure");
+		prompter.println("2. Search flights by destination");
+		int i = prompter.prompt("Please select option 1 or 2", 1, 2);
 		return i;
 	}
 }
