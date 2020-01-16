@@ -11,15 +11,18 @@ public class PrompterImpl implements Prompter {
 		this.io = io;
 	}
 
+	@Override
 	public String prompt(String message) {
 		print(message);
 		return io.readLine();
 	}
 
+	@Override
 	public void print(String message) {
 		io.print(message);
 	}
 
+	@Override
 	public void println(String message) {
 		print(String.format("%s%n", message));
 	}
