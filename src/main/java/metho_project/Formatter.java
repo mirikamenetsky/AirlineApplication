@@ -1,5 +1,7 @@
 package metho_project;
 
+import data.Flight;
+
 public class Formatter {
 
 	public String flightDisplayer(Flight flight) {

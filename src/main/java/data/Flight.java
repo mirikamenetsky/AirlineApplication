@@ -1,4 +1,4 @@
-package metho_project;
+package data;
 
 import java.time.LocalDateTime;
 
@@ -16,18 +16,10 @@ public class Flight {
 
 	public Flight(String departure, String destination, int maxPass, LocalDateTime departureDate, int flightLengthHours,
 			int flightLengthMinutes, LocalDateTime arrivalDate) {
-		this.departure = departure;
-		this.destination = destination;
-		this.maxPass = maxPass;
-		this.departureDate = departureDate;
-		this.flightLengthHours = flightLengthHours;
-		this.flightLengthMinutes = flightLengthMinutes;
-		this.arrivalDate = arrivalDate;
-		this.flightNumber = flights;
-		flights++;
-
+		this(departure, destination, maxPass, departureDate, flightLengthHours, flightLengthMinutes, arrivalDate, ++flights);
 	}
 
+	// For testing only!
 	public Flight(String departure, String destination, int maxPass, LocalDateTime departureDate, int flightLengthHours,
 			int flightLengthMinutes, LocalDateTime arrivalDate, int flightNumber) {
 		this.departure = departure;
@@ -38,7 +30,7 @@ public class Flight {
 		this.flightLengthMinutes = flightLengthMinutes;
 		this.arrivalDate = arrivalDate;
 		this.flightNumber = flightNumber;
-		flights = ++flightNumber;
+		flights = flightNumber + 1;
 	}
 
 	public int getFlightNumber() {

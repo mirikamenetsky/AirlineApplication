@@ -3,20 +3,18 @@ package metho_project;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import data.Flight;
 import io.Prompter;
 import validators.*;
 
 public class FlightModification {
-	private final Calculator calc;
 	private final Searcher search;
 	private final Prompter prompter;
 	private final StringValidator stringValidator;
 	private final DateValidator dateValidator;
 	private final List<Flight> flights;
 
-	public FlightModification(Prompter prompter, StringValidator stringValidator, DateValidator dateValidator,
-			Calculator calc, Searcher search, List<Flight> flights) {
-		this.calc = calc;
+	public FlightModification(Prompter prompter, StringValidator stringValidator, DateValidator dateValidator, Searcher search, List<Flight> flights) {
 		this.search = search;
 		this.prompter = prompter;
 		this.stringValidator = stringValidator;
@@ -59,7 +57,7 @@ public class FlightModification {
 
 		LocalDateTime departureDate = prompter.promptDate("Enter new Departure Date and Time (yyyy-MM-dd HH:mm): ",
 				dateValidator);
-		LocalDateTime aDate = calc.calculateArrivalTime(departureDate, flights.get(index).getFlightHours(),
+		LocalDateTime aDate = Calculator.calculateArrivalTime(departureDate, flights.get(index).getFlightHours(),
 				flights.get(index).getFlightMinutes());
 		flights.get(index).setDepartureDate(departureDate);
 		flights.get(index).setArrivalDate(aDate);
@@ -72,7 +70,7 @@ public class FlightModification {
 
 		int minutes = prompter.prompt("minutes:", 0, 59);
 
-		LocalDateTime aDate = calc.calculateArrivalTime(flights.get(index).getDepartureDate(), hours, minutes);
+		LocalDateTime aDate = Calculator.calculateArrivalTime(flights.get(index).getDepartureDate(), hours, minutes);
 		flights.get(index).setDestination(destination);
 		flights.get(index).setFlightHours(hours);
 		flights.get(index).setFlightMinutes(minutes);
@@ -86,7 +84,7 @@ public class FlightModification {
 
 		int minutes = prompter.prompt("minutes:", 0, 59);
 
-		LocalDateTime aDate = calc.calculateArrivalTime(flights.get(index).getDepartureDate(), hours, minutes);
+		LocalDateTime aDate = Calculator.calculateArrivalTime(flights.get(index).getDepartureDate(), hours, minutes);
 		flights.get(index).setDeparture(departure);
 		flights.get(index).setFlightHours(hours);
 		flights.get(index).setFlightMinutes(minutes);

@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import metho_project.Flight;
+import data.Flight;
 import validators.FlightValidator;
 
 public class FlightValidatorTest {

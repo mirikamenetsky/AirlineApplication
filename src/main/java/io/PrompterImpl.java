@@ -57,7 +57,6 @@ public class PrompterImpl implements Prompter {
 			String value = prompt(prompt);
 			String errorMessage = validator.validate(value);
 			if (errorMessage == null) {
-				;
 				return validator.getDate();
 			}
 			println(errorMessage);

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import data.Flight;
 import io.Prompter;
 import validators.DateValidator;
 import validators.StringValidator;
@@ -18,7 +19,6 @@ public class FlightEntryFormTest {
 	public Prompter prompter;
 	public StringValidator sValidator;
 	public DateValidator dValidator;
-	public Calculator calc;
 	public FlightEntryForm fef;
 
 	@Before
@@ -26,7 +26,6 @@ public class FlightEntryFormTest {
 		prompter = mock(Prompter.class);
 		sValidator = mock(StringValidator.class);
 		dValidator = mock(DateValidator.class);
-		calc = new Calculator();
 	}
 
 	@Test
@@ -39,7 +38,7 @@ public class FlightEntryFormTest {
 		when(prompter.promptDate("Departure Date and Time (yyyy-MM-dd HH:mm): ", dValidator))
 				.thenReturn(LocalDateTime.of(2020, 10, 10, 10, 10));
 
-		FlightEntryForm fef = new FlightEntryForm(prompter, sValidator, dValidator, calc);
+		FlightEntryForm fef = new FlightEntryForm(prompter, sValidator, dValidator);
 		Flight flight = fef.createFlight();
 
 		assertEquals("JFK", flight.getDeparture());

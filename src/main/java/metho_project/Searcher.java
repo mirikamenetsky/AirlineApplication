@@ -1,11 +1,13 @@
 package metho_project;
 
+import static java.util.stream.Collectors.toList;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import data.Flight;
 import io.*;
 import validators.*;
 
@@ -29,14 +31,8 @@ public class Searcher {
 	}
 
 	public List<Flight> upcomingFlightsWithinOneWeek() {
-		List<Flight> flightList = new ArrayList<>();
 		LocalDateTime today = systemClock.getCurrentDate();
-		for (Flight flight : flights) {
-			if (flight.getDepartureDate().isBefore(today.plusDays(7)) && flight.getDepartureDate().isAfter(today)) {
-				flightList.add(flight);
-			}
-		}
-		return flightList;
+		return flights.stream().filter(f -> f.getDepartureDate().isBefore(today.plusDays(7)) && f.getDepartureDate().isAfter(today)).collect(toList());
 	}
 
 	public int findFlight(int flightNumber) {
@@ -51,18 +47,14 @@ public class Searcher {
 	public void searchByDeparture() {
 		LocalDate date = getDateFromUser();
 		String departure = prompter.prompt("Enter Departure Location", stringValidator);
-		List<Flight> list = flights;
-		list = list.stream().filter(f -> ((Flight) f).getDeparture().equalsIgnoreCase(departure)
-				&& ((Flight) f).getDepartureDate().toLocalDate().equals(date)).collect(Collectors.toList());
+		List<Flight> list = flights.stream().filter(f -> f.getDeparture().equalsIgnoreCase(departure) && f.getDepartureDate().toLocalDate().equals(date)).collect(toList());
 		viewFlights(list);
 	}
 
 	public void searchByDestination() {
 		LocalDate date = getDateFromUser();
 		String destination = prompter.prompt("Enter Destination", stringValidator);
-		List<Flight> list = flights;
-		list = list.stream().filter(f -> ((Flight) f).getDestination().equalsIgnoreCase(destination)
-				&& ((Flight) f).getDepartureDate().toLocalDate().equals(date)).collect(Collectors.toList());
+		List<Flight> list = flights.stream().filter(f -> f.getDestination().equalsIgnoreCase(destination) && f.getDepartureDate().toLocalDate().equals(date)).collect(toList());
 		viewFlights(list);
 	}
 
@@ -71,6 +63,7 @@ public class Searcher {
 			prompter.println("\n---No flights to display---");
 			return;
 		}
+		
 		prompter.println("\n---Available Flights---");
 		for (Flight temp : flights) {
 			if (temp.getDepartureDate().isAfter(systemClock.getCurrentDate())) {

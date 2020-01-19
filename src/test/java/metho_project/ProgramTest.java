@@ -10,6 +10,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import data.Flight;
+
 import static org.mockito.Mockito.*;
 
 import io.Prompter;
@@ -28,7 +30,6 @@ public class ProgramTest {
 	public Formatter formatter;
 	public List<Flight> flights;
 	public FlightEntryForm fef;
-	public Calculator calc;
 	public Program program;
 
 	@Before
@@ -43,9 +44,8 @@ public class ProgramTest {
 		createFlights();
 		searcher = new Searcher(prompter, new StubSystemClock(LocalDateTime.of(2020, 11, 20, 11, 20)), formatter, sv,
 				dv, flights);
-		calc = new Calculator();
-		fm = new FlightModification(prompter, sv, dv, calc, searcher, flights);
-		fef = new FlightEntryForm(prompter, sv, dv, calc);
+		fm = new FlightModification(prompter, sv, dv, searcher, flights);
+		fef = new FlightEntryForm(prompter, sv, dv);
 		program = new Program(menu, searcher, fm, prompter, rv, fef, flights);
 
 	}

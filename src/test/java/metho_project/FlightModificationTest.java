@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import data.Flight;
 import io.Prompter;
 import validators.*;
 
@@ -31,8 +32,7 @@ public class FlightModificationTest {
 		createFlight();
 		searcher = new Searcher(prompter, new StubSystemClock(LocalDateTime.of(2020, 11, 20, 11, 20)), new Formatter(),
 				sValidator, dValidator, flights);
-		calc = new Calculator();
-		fm = new FlightModification(prompter, sValidator, dValidator, calc, searcher, flights);
+		fm = new FlightModification(prompter, sValidator, dValidator, searcher, flights);
 
 	}
 

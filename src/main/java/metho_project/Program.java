@@ -1,6 +1,8 @@
 package metho_project;
 
 import java.util.List;
+
+import data.Flight;
 import io.Prompter;
 import validators.RepeatValidator;
 
@@ -33,7 +35,7 @@ public class Program {
 		}
 	}
 
-	public void executeOperation(int choice) {
+	void executeOperation(int choice) {
 
 		switch (choice) {
 		case 1:
@@ -61,7 +63,7 @@ public class Program {
 		}
 	}
 
-	public void addFlights() {
+	private void addFlights() {
 		String input = "Y";
 		while (input.equals("Y") || input.equals("YES")) {
 			Flight flight = fef.createFlight();
@@ -71,7 +73,7 @@ public class Program {
 
 	}
 
-	public void cancelFlight() {
+	private void cancelFlight() {
 		boolean successful = fm.cancelFlight();
 		if (successful) {
 			prompter.println("Flight removed successfully");
@@ -80,12 +82,12 @@ public class Program {
 		}
 	}
 
-	public void upcomingFlightsWithinOneWeek() {
+	private void upcomingFlightsWithinOneWeek() {
 		List<Flight> flights = searcher.upcomingFlightsWithinOneWeek();
 		searcher.viewFlights(flights);
 	}
 
-	public void modifyFlight() {
+	private void modifyFlight() {
 		int flightNum = fm.getFlightNumFromUser();
 		int index = searcher.findFlight(flightNum);
 		if (index == -1) {
@@ -97,12 +99,12 @@ public class Program {
 		prompter.println("Flight modified successfully");
 	}
 
-	public void searchForFlights() {
+	private void searchForFlights() {
 		int choice = menu.chooseFlightsToSearch();
 		executeFlightSearchChoice(choice);
 	}
 
-	public void executeFlightSearchChoice(int choice) {
+	private void executeFlightSearchChoice(int choice) {
 		switch (choice) {
 		case 1:
 			searcher.searchByDeparture();
